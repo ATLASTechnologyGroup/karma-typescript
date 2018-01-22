@@ -20,7 +20,7 @@ export class DependencyWalker {
     private requireRegexp = /\brequire\b/;
     private walk = require("acorn/dist/walk");
 
-    constructor(private log: Logger) {}
+    constructor(private log: Logger) { }
 
     public hasRequire(s: string): boolean {
         return this.requireRegexp.test(s);
@@ -35,7 +35,7 @@ export class DependencyWalker {
 
             queued.item.dependencies = this.findUnresolvedTsRequires(queued.emitOutput);
 
-            let resolvedModules = (<any> queued.emitOutput.sourceFile).resolvedModules;
+            let resolvedModules = (<any>queued.emitOutput.sourceFile).resolvedModules;
 
             if (resolvedModules && !queued.emitOutput.isDeclarationFile) {
 
@@ -61,18 +61,18 @@ export class DependencyWalker {
     }
 
     public collectJavascriptDependencies(bundleItem: BundleItem,
-                                         onDependenciesCollected: { (moduleNames: string[]): void }): void {
+        onDependenciesCollected: { (moduleNames: string[]): void }): void {
 
         let moduleNames: string[] = [];
         let expressions: any[] = [];
 
         let isRequire = (node: any) => {
             return node.type === "CallExpression" &&
-                   node.callee.type === "Identifier" &&
-                   node.callee.name === "require";
+                node.callee.type === "Identifier" &&
+                node.callee.name === "require";
         };
 
-        let visitNode = (node: any, state: any, c: any)  => {
+        let visitNode = (node: any, state: any, c: any) => {
             if (!this.hasRequire(bundleItem.source.slice(node.start, node.end))) {
                 return;
             }
@@ -136,14 +136,14 @@ export class DependencyWalker {
 
             if (node.kind === ts.SyntaxKind.CallExpression) {
 
-                let ce = (<ts.CallExpression> node);
+                let ce = (<ts.CallExpression>node);
 
                 let expression = ce.expression ?
-                    (<ts.LiteralExpression> ce.expression) :
+                    (<ts.LiteralExpression>ce.expression) :
                     undefined;
 
                 let argument = ce.arguments && ce.arguments.length ?
-                    (<ts.LiteralExpression> ce.arguments[0]) :
+                    (<ts.LiteralExpression>ce.arguments[0]) :
                     undefined;
 
                 if (expression && expression.text === "require" &&
@@ -161,8 +161,8 @@ export class DependencyWalker {
     }
 
     private addDynamicDependencies(expressions: any[],
-                                   bundleItem: BundleItem,
-                                   onDynamicDependenciesAdded: { (dynamicDependencies: string[]): void }) {
+        bundleItem: BundleItem,
+        onDynamicDependenciesAdded: { (dynamicDependencies: string[]): void }) {
 
         let dynamicDependencies: string[] = [];
 
@@ -197,9 +197,9 @@ export class DependencyWalker {
                                 }
                                 if (stats.isFile()) {
                                     this.log.debug("Dynamic require: \nexpression: [%s]" +
-                                                  "\nfilename: %s\nrequired by %s\nglob: %s",
-                                                  JSON.stringify(expression, undefined, 3),
-                                                  match, bundleItem.filename, pattern);
+                                        "\nfilename: %s\nrequired by %s\nglob: %s",
+                                        JSON.stringify(expression, undefined, 3),
+                                        match, bundleItem.filename, pattern);
                                     dynamicDependencies.push("./" + path.relative(directory, match));
                                 }
                                 onMatchResolved();
@@ -262,12 +262,12 @@ export class DependencyWalker {
                                 if (part.added) {
                                     arrows += "^";
                                 }
-                                else if (!part.removed){
+                                else if (!part.removed) {
                                     arrows += pad("", part.count);
                                 }
                             });
 
-                            throw new Error("Uppercase/lowercase mismatch importing " +
+                            console.warn("Uppercase/lowercase mismatch importing " +
                                 dependency.moduleName + " from " + queued.file.originalPath +
                                 ":" + os.EOL + os.EOL +
                                 "filename:    " + files[lowerIndex] + os.EOL +
